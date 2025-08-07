@@ -12,3 +12,6 @@ symfony console doctrine:database:create
 ## En cas de modifications, suppression, ajout d'une entité existante
 symfony console make:migration
 symfony console doctrine:migrations:migrate
+
+## Fixtures
+symfony console doctrine:fixtures:load

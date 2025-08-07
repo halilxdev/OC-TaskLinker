@@ -1,8 +1,10 @@
+{% set current_path = app.request.get('_route') %}
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Welcome!{% endblock %} | TaskLinker</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
         {% endblock %}
@@ -12,6 +14,45 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+
+        <div id="main-container">
+
+            {# HEADER #}
+            <nav>
+                <a href="./" id="logo">
+                <img src="/assets/img/logo.png" alt="Logo TaskLinker" />
+                </a>
+                <ul id="main-menu">
+                    <li class="{{ current_path == 'app_project_index' ? 'active' : '' }}">
+                        <a href="./">
+                        <i class="fa-solid fa-list-check"></i> Projets
+                        </a>
+                    </li>
+                    <li class="{{ current_path == 'app_employee_index' ? 'active' : '' }}">
+                        <a href="./employee">
+                        <i class="fa-regular fa-user"></i> Équipe
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <main>
+                
+                <header>
+                    <div id="current-user"></div>
+                    <div id="title-page">
+                    <h1>{{ block('title') }}</h1>
+                    </div>
+                </header>
+                
+                <div id="content">
+                    {% block body %}{% endblock %}
+                </div>
+                
+            </main>
+
+
+        </div>
+
     </body>
 </html>
