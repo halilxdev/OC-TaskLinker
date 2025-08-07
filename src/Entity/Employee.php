@@ -29,8 +29,16 @@ class Employee
     #[ORM\Column(enumType: EmployeeContract::class)]
     private EmployeeContract $contract = EmployeeContract::CDD;
 
+    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'employees')]
+    private Collection $projects;
+
     #[ORM\Column(length: 255)]
     private ?string $email = null;
+
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -95,4 +103,29 @@ class Employee
 
         return $this;
     }
+
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->addEmployee($this); // sync inverse
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            $project->removeEmployee($this); // sync inverse
+        }
+
+        return $this;
+    }
+
 }

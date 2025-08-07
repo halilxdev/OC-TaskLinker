@@ -16,12 +16,6 @@ class Project
     private ?int $id = null;
 
     /**
-     * @var Collection<int, Employee>
-     */
-    #[ORM\ManyToMany(targetEntity: Employee::class)]
-    private Collection $employee;
-
-    /**
      * @var Collection<int, Task>
      */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'project')]
@@ -33,12 +27,12 @@ class Project
     /**
      * @var Collection<int, Employee>
      */
-    #[ORM\ManyToMany(targetEntity: Employee::class)]
+    #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'projects')]
+    #[ORM\JoinTable(name: 'project_employee')]
     private Collection $employees;
 
     public function __construct()
     {
-        $this->employee = new ArrayCollection();
         $this->task = new ArrayCollection();
         $this->employees = new ArrayCollection();
     }
@@ -48,18 +42,16 @@ class Project
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Employee>
-     */
-    public function getEmployee(): Collection
+    public function getEmployees(): Collection
     {
-        return $this->employee;
+        return $this->employees;
     }
 
     public function addEmployee(Employee $employee): static
     {
-        if (!$this->employee->contains($employee)) {
-            $this->employee->add($employee);
+        if (!$this->employees->contains($employee)) {
+            $this->employees[] = $employee;
+            $employee->addProject($this); // sync inverse
         }
 
         return $this;
@@ -67,7 +59,9 @@ class Project
 
     public function removeEmployee(Employee $employee): static
     {
-        $this->employee->removeElement($employee);
+        if ($this->employees->removeElement($employee)) {
+            $employee->removeProject($this); // sync inverse
+        }
 
         return $this;
     }
@@ -112,13 +106,5 @@ class Project
         $this->name = $name;
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Employee>
-     */
-    public function getEmployees(): Collection
-    {
-        return $this->employees;
     }
 }

@@ -15,3 +15,6 @@ symfony console doctrine:migrations:migrate
 
 ## Fixtures
 symfony console doctrine:fixtures:load
+
+## Pour supprimer tout ce qu'il y'a dans la base
+symfony console donctrine:database:drop --force
