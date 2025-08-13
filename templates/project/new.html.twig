@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block body %}
+
+    {{ form_start(form) }}
+    {{ form_row(form.name, {label: 'Titre du projet'}) }}
+    {{ form_row(form.employees, {label: 'Inviter des membres'}) }}
+    <br>
+    <button class="button button-submit">Modifier</button>
+    {{ form_end(form) }}
+
+{% endblock %}

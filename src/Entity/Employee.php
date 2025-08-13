@@ -12,6 +12,7 @@ use App\Enum\EmployeeContract;
 #[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 class Employee
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,9 +36,13 @@ class Employee
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Task::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $tasks;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,6 +128,33 @@ class Employee
     {
         if ($this->projects->removeElement($project)) {
             $project->removeEmployee($this); // sync inverse
+        }
+
+        return $this;
+    }
+
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): static
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->setEmployee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): static
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getEmployee() === $this) {
+                $task->setEmployee(null);
+            }
         }
 
         return $this;

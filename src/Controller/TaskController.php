@@ -2,25 +2,57 @@
 
 namespace App\Controller;
 
+use App\Entity\Project;
 use App\Entity\Task;
+use App\Form\TaskType;
+use App\Repository\TaskRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class TaskController extends AbstractController
 {
-    #[Route('/task', name: 'app_task')]
-    public function index(): Response
+
+
+    public function __construct(
+        private TaskRepository $taskRepository,
+        private EntityManagerInterface $entityManager,
+    )
     {
-        return $this->render('task/index.html.twig', [
-            'controller_name' => 'TaskController',
+
+    }
+
+    #[Route('task/new', name: 'app_task_new')]
+    #[Route('task/{id}', name: 'app_task_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function new(?Task $task, Request $request, EntityManagerInterface $manager): Response
+    {
+        $task ??= new Task();
+        $form = $this->createForm(TaskType::class, $task);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($task);
+            $manager->flush();
+            return $this->redirectToRoute('app_project_index');
+        }
+        return $this->render('/task/new.html.twig', [
+            'task'  => $task,
+            'form' => $form,
         ]);
     }
-    #[Route('/task/{id}', name: 'app_task_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(?Task $task): Response
+    
+    #[Route('task/{id}/delete', name: 'app_task_delete', requirements: ['id' => '\d+'])]
+    public function delete(int $id): Response
     {
-        return $this->render('task/edit.html.twig', [
-            'task' => $task,
-        ]);
+        $task = $this->taskRepository->find($id);
+        $project = $task->getProject();
+        if(!$task) {
+            return $this->redirectToRoute('app_project_detail', ['id' => $project->getId()]);
+        }
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('app_project_index');
     }
 }

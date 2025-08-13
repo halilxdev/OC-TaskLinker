@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Employé(e) : {{ employee.firstname }}{{ employee.lastname }}{% endblock %}
+
+{% block body %}
+
+    {{ form_start(form) }}
+    {{ form_row(form.last_name, {label: 'Nom'}) }}
+    {{ form_row(form.first_name, {label: 'Prénom'}) }}
+    {{ form_row(form.email, {label: 'Email'}) }}
+    <div class="form-flex">
+        {{ form_row(form.entry_date, {label: 'Date d\'entrée'}) }}
+        {{ form_row(form.contract, {label: 'Statut'}) }}
+    </div>
+    <br>
+    <button class="button button-submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+{% endblock %}

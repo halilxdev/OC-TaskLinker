@@ -27,7 +27,8 @@ class Task
     #[ORM\Column(enumType: TaskStatus::class)]
     private TaskStatus $status = TaskStatus::TODO;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Employee $employee = null;
 
     #[ORM\ManyToOne(inversedBy: 'task')]

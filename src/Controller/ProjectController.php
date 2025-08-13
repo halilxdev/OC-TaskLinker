@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
@@ -35,7 +37,7 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/project/{id}', name: 'app_project_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/project/{id}', name: 'app_project_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(?Project $project): Response
     {
         $employees = $project->getEmployees();
@@ -45,5 +47,36 @@ final class ProjectController extends AbstractController
             'employees' => $employees,
             'tasks' => $tasks,
         ]);
+    }
+
+    #[Route('project/new', name: 'app_project_new', methods: ['GET', 'POST'])]
+    #[Route('project/{id}/edit', name: 'app_project_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function new(?Project $project, Request $request, EntityManagerInterface $manager): Response
+    {
+        $project ??= new Project();
+        $form = $this->createForm(ProjectType::class, $project);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($project);
+            $manager->flush();
+            return $this->redirectToRoute('app_project_index');
+        }
+        return $this->render('/project/new.html.twig', [
+            'project'   => $project,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('project/{id}/delete', name: 'app_project_delete', requirements: ['id' => '\d+'])]
+    public function delete(int $id): Response
+    {
+        $project = $this->projectRepository->find($id);
+        $project = $project->getProject();
+        if(!$project) {
+            return $this->redirectToRoute('app_project_detail', ['id' => $project->getId()]);
+        }
+        $this->entityManager->remove($project);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('app_project_index');
     }
 }
