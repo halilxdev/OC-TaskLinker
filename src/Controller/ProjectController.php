@@ -50,8 +50,24 @@ final class ProjectController extends AbstractController
     }
 
     #[Route('project/new', name: 'app_project_new', methods: ['GET', 'POST'])]
-    #[Route('project/{id}/edit', name: 'app_project_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function new(?Project $project, Request $request, EntityManagerInterface $manager): Response
+    {
+        $project ??= new Project();
+        $form = $this->createForm(ProjectType::class, $project);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($project);
+            $manager->flush();
+            return $this->redirectToRoute('app_project_show', ['id' => $project->getId()]);
+        }
+        return $this->render('/project/new.html.twig', [
+            'project'   => $project,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('project/{id}/edit', name: 'app_project_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function edit(?Project $project, Request $request, EntityManagerInterface $manager): Response
     {
         $project ??= new Project();
         $form = $this->createForm(ProjectType::class, $project);
@@ -61,7 +77,7 @@ final class ProjectController extends AbstractController
             $manager->flush();
             return $this->redirectToRoute('app_project_index');
         }
-        return $this->render('/project/new.html.twig', [
+        return $this->render('/project/edit.html.twig', [
             'project'   => $project,
             'form' => $form,
         ]);
@@ -71,9 +87,13 @@ final class ProjectController extends AbstractController
     public function delete(int $id): Response
     {
         $project = $this->projectRepository->find($id);
-        $project = $project->getProject();
+        $tasks = $project->getTask();
         if(!$project) {
-            return $this->redirectToRoute('app_project_detail', ['id' => $project->getId()]);
+            return $this->redirectToRoute('app_project_index');
+        }
+        foreach($tasks as $t){
+            $this->entityManager->remove($t);
+            $this->entityManager->flush();
         }
         $this->entityManager->remove($project);
         $this->entityManager->flush();

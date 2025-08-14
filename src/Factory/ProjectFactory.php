@@ -33,7 +33,7 @@ final class ProjectFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->text(60),
-            'employees' => EmployeeFactory::randomRange(0, 2),
+            'employees' => EmployeeFactory::randomRange(1, 3),
         ];
     }
 

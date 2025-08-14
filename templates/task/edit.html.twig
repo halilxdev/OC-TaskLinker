@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter une tâche{% endblock %}
+{% block title %}Tâche{% endblock %}
 
 {% block body %}
 
@@ -10,7 +10,10 @@
     {{ form_row(form.deadline, {label: 'Date limite'}) }}
     {{ form_row(form.status, {label: 'Statut'}) }}
     {{ form_row(form.employee, {label: 'Employé'}) }}
-    <button class="button button-submit">Ajouter</button>
+    <button class="button button-submit">{% if not task %}Ajouter{% else %}Modifier{% endif %}</button>
+    {% if not task %}
+        <a href="{{ path('app_task_delete', {'id': task.id}) }}" class="delete-task">Supprimer la tâche</a>
+    {% endif %}
     {{ form_end(form) }}
 
 {% endblock %}

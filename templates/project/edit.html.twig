@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouveau projet{% endblock %}
+{% block title %}
+        Nouveau projet
+{% endblock %}
 
 {% block body %}
 
@@ -8,7 +10,8 @@
     {{ form_row(form.name, {label: 'Titre du projet'}) }}
     {{ form_row(form.employees, {label: 'Inviter des membres'}) }}
     <br>
-    <button class="button button-submit">Ajouter</button>
+    <button class="button button-submit">
+        {% if not project %}Ajouter{% else %}Modifier{% endif %}</button>
     {{ form_end(form) }}
 
 {% endblock %}
