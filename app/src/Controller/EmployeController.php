@@ -43,7 +43,7 @@ class EmployeController extends AbstractController
     }
 
     #[Route('/deconnexion', name: 'app_logout')]
-    public function logout(): never
+    public function logout(): void
     {
         // On ne passera jamais ici, Symfony gère la déconnexion pour nous.
     }

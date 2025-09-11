@@ -1,4 +1,20 @@
-# HESAP
+Ce fichier README a été généré le 2025/09/11 par [halilxdev](https://github.com/halilxdev/)
+
+Dernière mise-à-jour le : 2025/09/11.
+
+# TaskLinker — Gestion de projets en entreprise
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -192,4 +208,6 @@ ficher : docker/php/Dockerfile
 ```
 
 # Création d'un projet Symfony
-symfony new app --version="7.3.x" --webapp
+```bash
+    symfony new app --version="7.3.x" --webapp
+```
