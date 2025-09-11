@@ -38,8 +38,8 @@
                 <header>
                     <div id="current-user">
                         {% if app.user %}
-                            <a href="{{ path('app_logout') }}" class="avatar">
-                                {{ app.user.prenom | first }}{{ app.user.nom | first }}
+                            <a href="{{ path('app_logout') }}" style="float: right; color: lightGray;">
+                                Déconnexion
                             </a>
                         {% endif %}
                     </div>
